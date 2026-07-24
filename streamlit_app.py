@@ -705,17 +705,56 @@ def render_simulator_tab(
 ) -> tuple[float, float, float]:
     st.subheader("Simulador e poupança")
 
+    scenario_mode = st.radio(
+        "Modo de utilização energética",
+        options=[
+            "Rede + fotovoltaica (autoconsumo)",
+            "Só rede",
+            "Só fotovoltaica",
+        ],
+        horizontal=True,
+    )
+
     custo_sem_solar = 0.0
     custo_com_solar = 0.0
+    deficit_total = 0.0
+    excedente_total = 0.0
+    consumo_total = 0.0
 
     for _, row in df_energy.iterrows():
         consumo_h = float(row["Consumo_previsto"])
         producao_h = float(row["Producao_solar"])
         preco_h = float(row["Preco"])
+
+        consumo_total += consumo_h
         custo_sem_solar += consumo_h * preco_h
         custo_com_solar += max(consumo_h - producao_h, 0.0) * preco_h
+        deficit_total += max(consumo_h - producao_h, 0.0)
+        excedente_total += max(producao_h - consumo_h, 0.0)
 
     poupanca = custo_sem_solar - custo_com_solar
+
+    if scenario_mode == "Rede + fotovoltaica (autoconsumo)":
+        custo_operacional = custo_com_solar
+        energia_rede = deficit_total
+        energia_nao_suprida = 0.0
+        st.info(
+            "Neste modo, a produção solar é usada primeiro e a rede cobre apenas o défice."
+        )
+    elif scenario_mode == "Só rede":
+        custo_operacional = custo_sem_solar
+        energia_rede = consumo_total
+        energia_nao_suprida = 0.0
+        st.info(
+            "Neste modo, ignora-se a produção fotovoltaica e todo o consumo é comprado à rede."
+        )
+    else:
+        custo_operacional = 0.0
+        energia_rede = 0.0
+        energia_nao_suprida = deficit_total
+        st.info(
+            "Neste modo, não há recurso à rede: o défice representa energia não suprida."
+        )
 
     c1, c2, c3 = st.columns(3)
     with c1:
@@ -724,6 +763,17 @@ def render_simulator_tab(
         st.metric("Custo com solar (24h)", f"{custo_com_solar:.2f} EUR")
     with c3:
         st.metric("Poupanca estimada (24h)", f"{poupanca:.2f} EUR")
+
+    c4, c5, c6 = st.columns(3)
+    with c4:
+        st.metric("Custo no modo selecionado", f"{custo_operacional:.2f} EUR")
+    with c5:
+        st.metric("Energia da rede", f"{energia_rede:.2f} kWh")
+    with c6:
+        st.metric("Excedente solar", f"{excedente_total:.2f} kWh")
+
+    if scenario_mode == "Só fotovoltaica":
+        st.warning(f"Energia não suprida sem rede: {energia_nao_suprida:.2f} kWh")
 
     fig_energy = px.line(
         df_energy,
