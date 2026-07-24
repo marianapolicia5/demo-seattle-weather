@@ -40,11 +40,17 @@ if not callable(getattr(st, "write", None)):
 CITY_OPTIONS = ["Lisboa", "Porto", "Coimbra", "Faro", "Funchal"]
 CYCLE_OPTIONS = ["Simples", "Bi-horária", "Tri-horária"]
 PRICE_OPTIONS = ["Preço fixo", "Preço variável"]
+ENERGY_MODE_OPTIONS = [
+    "Rede + fotovoltaica (autoconsumo)",
+    "Só rede",
+    "Só fotovoltaica",
+]
 STATE_DEFAULTS = {
     "abrir_config": True,
     "city": "Lisboa",
     "cycle": "Simples",
     "price_type": "Preço fixo",
+    "energy_mode": "Rede + fotovoltaica (autoconsumo)",
     "num_solar_panels": 0,
     "panel_wattage": 400,
 }
@@ -121,6 +127,7 @@ def get_config() -> dict[str, Any]:
         "city": st.session_state.city,
         "cycle": st.session_state.cycle,
         "price_type": st.session_state.price_type,
+        "energy_mode": st.session_state.energy_mode,
         "num_solar_panels": st.session_state.num_solar_panels,
         "panel_wattage": st.session_state.panel_wattage,
     }
@@ -287,6 +294,12 @@ def popup_configuracao() -> None:
         "Tipo de preco",
         PRICE_OPTIONS,
         index=safe_index(PRICE_OPTIONS, st.session_state.price_type),
+    )
+    st.session_state.energy_mode = st.selectbox(
+        "Fonte de energia (simulação)",
+        ENERGY_MODE_OPTIONS,
+        index=safe_index(ENERGY_MODE_OPTIONS, st.session_state.energy_mode),
+        help="Define como o simulador considera o fornecimento energético da habitação.",
     )
     st.session_state.num_solar_panels = st.number_input(
         "Numero de paineis solares",
@@ -702,18 +715,11 @@ def render_simulator_tab(
     weather: dict[str, Any] | None,
     city: str,
     now: datetime,
+    scenario_mode: str,
 ) -> tuple[float, float, float]:
     st.subheader("Simulador e poupança")
 
-    scenario_mode = st.radio(
-        "Modo de utilização energética",
-        options=[
-            "Rede + fotovoltaica (autoconsumo)",
-            "Só rede",
-            "Só fotovoltaica",
-        ],
-        horizontal=True,
-    )
+    st.caption(f"Modo energético configurado: {scenario_mode}")
 
     custo_sem_solar = 0.0
     custo_com_solar = 0.0
@@ -826,6 +832,7 @@ config = get_config()
 city = config["city"]
 cycle = config["cycle"]
 price_type = config["price_type"]
+energy_mode = config["energy_mode"]
 num_solar_panels = int(config["num_solar_panels"])
 panel_wattage = int(config["panel_wattage"])
 
@@ -987,6 +994,7 @@ with simulator_tab:
         weather,
         city,
         now,
+        energy_mode,
     )
 
     with st.expander("Comparar ciclos tarifarios"):
