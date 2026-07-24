@@ -35,7 +35,7 @@ features_df = pd.DataFrame(
         {"Variavel": "day_of_week", "Descricao": "Dia da semana (0=segunda ... 6=domingo)"},
         {"Variavel": "month", "Descricao": "Mes do ano (1-12)"},
         {"Variavel": "is_weekend", "Descricao": "Indicador de fim de semana (0/1)"},
-        {"Variavel": "lag_1", "Descricao": "Consumo observado no intervalo de 30 minutos anterior"},
+        {"Variavel": "lag_1", "Descricao": "Consumo observado 30 minutos antes"},
         {"Variavel": "lag_48", "Descricao": "Consumo observado no mesmo intervalo do dia anterior"},
     ]
 )
