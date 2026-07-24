@@ -917,16 +917,31 @@ if not is_supabase_available():
         f"porque o Supabase não está configurado neste deploy. {get_supabase_status_message()}"
     )
 
-if predicted_production > predicted_consumption:
-    status_line = "A producao solar esta a cobrir parte do consumo."
-elif price <= 0.15:
-    status_line = "Preco em vazio neste momento."
-elif price > 0.22 and predicted_production < predicted_consumption:
-    status_line = "Estes num periodo tarifario caro."
-elif cloud_coverage > 70:
-    status_line = "Producao solar limitada pelas nuvens."
+if energy_mode == "Só rede":
+    if price <= 0.15:
+        status_line = "Modo só rede ativo: preço baixo neste momento para consumir da rede."
+    elif price > 0.22:
+        status_line = "Modo só rede ativo: período tarifário caro, convém reduzir consumos flexíveis."
+    else:
+        status_line = "Modo só rede ativo: consumo totalmente dependente da tarifa atual."
+elif energy_mode == "Só fotovoltaica":
+    if predicted_production >= predicted_consumption:
+        status_line = "Modo só fotovoltaica ativo: produção atual suficiente para cobrir o consumo."
+    elif cloud_coverage > 70:
+        status_line = "Modo só fotovoltaica ativo: nebulosidade elevada pode agravar o défice energético."
+    else:
+        status_line = "Modo só fotovoltaica ativo: pode existir défice se a produção não cobrir o consumo."
 else:
-    status_line = "Este e um bom momento para utilizar eletrodomesticos."
+    if predicted_production > predicted_consumption:
+        status_line = "Modo híbrido ativo: produção solar cobre o consumo atual e pode gerar excedente."
+    elif price <= 0.15:
+        status_line = "Modo híbrido ativo: preço em vazio, bom momento para consumos flexíveis."
+    elif price > 0.22 and predicted_production < predicted_consumption:
+        status_line = "Modo híbrido ativo: tarifa cara com défice solar, evita consumos não urgentes."
+    elif cloud_coverage > 70:
+        status_line = "Modo híbrido ativo: nebulosidade elevada pode reduzir o contributo fotovoltaico."
+    else:
+        status_line = "Modo híbrido ativo: contexto equilibrado para gestão de consumos."
 
 st.info(status_line)
 
