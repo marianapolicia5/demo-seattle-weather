@@ -983,19 +983,24 @@ with current_tab:
         else:
             st.info(advice)
 
-    st.subheader(t["hourly_chart"])
-    prices = [electricity_price(h, weekday, cycle, price_type) for h in range(24)]
-    df_tariff = pd.DataFrame({"Hour": list(range(24)), "Price (€/kWh)": prices})
-    fig_price = px.line(
-        df_tariff,
-        x="Hour",
-        y="Price (€/kWh)",
-        markers=True,
-        title=t["chart_title"],
-        color_discrete_sequence=["#f7a600"],
-    )
-    fig_price.add_vline(x=hour, line_dash="dash", line_color="red", annotation_text=t["now_label"])
-    st.plotly_chart(fig_price, use_container_width=True)
+    with st.expander(t["hourly_chart"]):
+        prices = [electricity_price(h, weekday, cycle, price_type) for h in range(24)]
+        df_tariff = pd.DataFrame({"Hour": list(range(24)), "Price (€/kWh)": prices})
+        fig_price = px.line(
+            df_tariff,
+            x="Hour",
+            y="Price (€/kWh)",
+            markers=True,
+            title=t["chart_title"],
+            color_discrete_sequence=["#f7a600"],
+        )
+        fig_price.add_vline(
+            x=hour,
+            line_dash="dash",
+            line_color="red",
+            annotation_text=t["now_label"],
+        )
+        st.plotly_chart(fig_price, use_container_width=True)
 
 
 
