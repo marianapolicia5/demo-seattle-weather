@@ -71,6 +71,10 @@ PT_TEXTS = {
     "rec_high_solar": "Produção solar elevada — Recomenda-se o uso de energia solar.",
     "rec_partial_solar": "Produção solar ativa mas insuficiente — Tenta reduzir o consumo para maximizar o autoconsumo.",
     "rec_clouds": "Nebulosidade elevada — A produção solar pode ser reduzida.",
+    "rec_mode_grid": "Modo só rede — todo o consumo será comprado à rede.",
+    "rec_mode_solar_only": "Modo só fotovoltaica — sem apoio da rede, o défice pode não ser suprido.",
+    "rec_mode_hybrid": "Modo híbrido — a produção solar é usada primeiro e a rede cobre o défice.",
+    "rec_no_solar_supply": "Produção solar insuficiente neste período para cobrir o consumo.",
     "rec_none": "Sem recomendações específicas neste momento.",
 }
 
@@ -953,6 +957,7 @@ with current_tab:
         price,
         cloud_coverage,
         t,
+        energy_mode,
     )
     st.subheader(t["rec_title"])
     for advice in advices:

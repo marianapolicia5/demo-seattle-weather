@@ -235,18 +235,67 @@ def estimate_solar_production(
     )
     return float(max(0.0, production_kwh))
 
-def generate_recommendation(predicted_consumption, predicted_production, current_price, cloud_coverage, t):
+def generate_recommendation(
+    predicted_consumption,
+    predicted_production,
+    current_price,
+    cloud_coverage,
+    t,
+    energy_mode="Rede + fotovoltaica (autoconsumo)",
+):
     """
     Generate recommendation based on predicted consumption, production, current price, and cloud coverage.
 
     """
     advices = []
 
+    if energy_mode == "Só rede":
+        advices.append(t.get("rec_mode_grid", "Modo rede: todo o consumo será comprado à rede."))
+
+        if current_price <= 0.15:
+            advices.append(t["rec_low_price"])
+        elif current_price > 0.22:
+            advices.append(t["rec_high_price"])
+
+        return advices if advices else [t["rec_none"]]
+
+    if energy_mode == "Só fotovoltaica":
+        advices.append(
+            t.get(
+                "rec_mode_solar_only",
+                "Modo só fotovoltaica: sem apoio da rede, o défice pode não ser suprido.",
+            )
+        )
+
+        if predicted_production > predicted_consumption:
+            advices.append(t["rec_high_solar"])
+        elif predicted_production > 0 and predicted_consumption > 0:
+            advices.append(t["rec_partial_solar"])
+        else:
+            advices.append(
+                t.get(
+                    "rec_no_solar_supply",
+                    "Produção solar insuficiente neste período para cobrir o consumo.",
+                )
+            )
+
+        if cloud_coverage > 70:
+            advices.append(t["rec_clouds"])
+
+        return advices if advices else [t["rec_none"]]
+
+    advices.append(
+        t.get(
+            "rec_mode_hybrid",
+            "Modo híbrido: a produção solar é usada primeiro e a rede cobre o défice.",
+        )
+    )
+
     if current_price <= 0.15:
         advices.append(t["rec_low_price"])
     elif current_price > 0.22:
         advices.append(t["rec_high_price"])
-    
+
     if predicted_production > predicted_consumption:
         advices.append(t["rec_high_solar"])
     elif predicted_production > 0 and predicted_consumption > 0:
