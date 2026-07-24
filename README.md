@@ -137,3 +137,9 @@ pip install jupyter notebook ipykernel matplotlib seaborn
 ## Licença
 
 Este projeto inclui a licença disponível em [LICENSE](/workspaces/demo-seattle-weather/LICENSE).
+
+## Créditos e Referências
+
+- Dados de consumo e produção: [Ausgrid Solar Home Electricity Data](https://www.ausgrid.com.pt).
+- Scripts de referência para tratamento de dados: [Pierre Haessig](https://github.com/pierre-haessig/ausgrid-solar-data).
+- Inspiração para a interface Streamlit: [Streamlit Seattle Weather Demo](https://github.com/streamlit/demo-seattle-weather).

@@ -1,3 +1,13 @@
+
+"""
+Smart Energy Advisor
+Autor: Mariana Polícia
+Baseado conceptualmente em:
+- Processamento Ausgrid por Pierre Haessig (https://github.com/pierre-haessig/ausgrid-solar-data)
+- Estrutura de Dashboard por Streamlit Demo (https://github.com/streamlit/demo-seattle-weather)
+"""
+
+
 import importlib
 import re
 from datetime import datetime
