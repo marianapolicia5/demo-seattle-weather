@@ -23,34 +23,37 @@ def electricity_price(hour, weekday, cycle_type="Two-cycle", price_model="Fixed"
     cycle_type = cycle_alias.get(cycle_type, cycle_type)
     price_model = price_alias.get(price_model, price_model)
 
-    if price_model == "Fixed":
-        base_price = 0.18 # fictitious value
-
-    else:
-        # Aqui no futuro podes ligar ao OMIE, para já simulamos um indexado
-        # Simulated indexed price
-        base_price = 0.14 if (hour < 7 or hour > 23) else 0.20
-
+    # ERSE regulated tariffs 2024/2025, BTN ≤ 20.7 kVA (€/kWh, inc. VAT)
     if cycle_type == "Simple":
-        return base_price
-    
-    elif cycle_type == "Two-cycle":
-        # Off-peak: 22h to 08h and weekends
-        if (hour >= 22 or hour < 8) or weekday >= 5:
-            return base_price * 0.5 #50% cheaper nothing fixed
-
+        if price_model == "Fixed":
+            return 0.2196
         else:
-            return base_price * 1.2 #20% more expensive nothing fixed
+            return 0.14 if (hour < 7 or hour >= 23) else 0.22  # simulated indexed
+
+    elif cycle_type == "Two-cycle":
+        # Vazio: 22h–08h weekdays, all weekend
+        is_off_peak = (hour >= 22 or hour < 8) or weekday >= 5
+        if price_model == "Fixed":
+            return 0.1246 if is_off_peak else 0.2626
+        else:
+            return 0.10 if is_off_peak else 0.22  # simulated indexed
 
     elif cycle_type == "Three-cycle":
-        # Peak, more expensive
-        if (9 <= hour <12) or (18 <= hour < 21):
-            return base_price * 2.0
-
-        # Off-peak, cheaper
-        elif (0 <= hour < 7):
-            return base_price * 0.4
-        
-        # Full, normal price
+        # Ponta: 09h–12h and 18h–21h weekdays
+        is_peak = weekday < 5 and ((9 <= hour < 12) or (18 <= hour < 21))
+        # Vazio: 00h–08h and 22h–24h weekdays, all weekend
+        is_off_peak = (hour >= 22 or hour < 8) or weekday >= 5
+        if price_model == "Fixed":
+            if is_peak:
+                return 0.2876
+            elif is_off_peak:
+                return 0.1046
+            else:
+                return 0.1966  # cheias
         else:
-            return base_price #normal
+            if is_peak:
+                return 0.26
+            elif is_off_peak:
+                return 0.09
+            else:
+                return 0.18  # simulated indexed
