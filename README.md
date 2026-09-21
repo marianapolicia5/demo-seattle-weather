@@ -1,145 +1,267 @@
 # Smart Energy Advisor
 
-Aplicação Streamlit para apoio à gestão energética residencial, com previsão de consumo por XGBoost, estimativa de produção solar, comparação entre ciclos tarifários e histórico de simulações com autenticação via Supabase.
+An end-to-end data science and machine learning project for household energy forecasting, solar production estimation, and electricity tariff simulation in Portugal.
 
-## O que o projeto faz
+The main component of the project is the Jupyter Notebook, which covers data preparation, exploratory data analysis, feature engineering, model training, evaluation, and export of the trained machine-learning artefacts. The resulting model is then integrated into an interactive Streamlit application.
 
-O Smart Energy Advisor combina três blocos principais:
+This project was developed as a Final Degree Project for the Bachelor's Degree in Computer Science and Engineering at ISMAT.
 
-- previsão de consumo energético com um modelo XGBoost treinado sobre dados agregados do dataset Ausgrid;
-- estimativa de produção solar com base na configuração da instalação e nas condições meteorológicas obtidas via OpenWeatherMap;
-- simulação de custos e poupança para ciclos tarifários portugueses simples, bi-horário e tri-horário.
+## Overview
 
-Além da simulação principal, a aplicação inclui autenticação, histórico de cenários guardados e páginas de apoio para análise exploratória dos dados e explicação do modelo.
+The Smart Energy Advisor combines a machine-learning pipeline with a web application for residential energy analysis.
 
-## Funcionalidades
+The project is divided into two main components:
 
-- Resumo energético atual com consumo previsto, produção solar, balanço e preço atual.
-- Previsão horária do dia com cruzamento entre meteorologia e consumo previsto.
-- Simulador de custos para as próximas 24 horas com e sem autoconsumo solar.
-- Comparação visual entre os três ciclos tarifários.
-- Recomendações contextuais baseadas em preço, produção solar e nebulosidade.
-- Histórico de simulações por utilizador com filtros e exportação CSV.
-- Página de análise do modelo e página de exploração dos dados agregados.
+1. **Data science and machine learning pipeline** developed in Jupyter Notebook;
+2. **Interactive Streamlit application** that uses the trained model to provide forecasts and energy simulations.
 
-## Estrutura do repositório
+The notebook is the main development and analysis component of the project. The Streamlit application provides a practical interface for using the results of the trained model.
+
+## Machine Learning Pipeline
+
+The complete machine-learning workflow is available in [`notebooks/notebook.ipynb`](notebooks/notebook.ipynb).
+
+The notebook includes:
+
+* Data loading and preparation;
+* Data cleaning and processing;
+* Exploratory data analysis;
+* Analysis of household energy-consumption patterns;
+* Feature engineering;
+* Preparation of data for machine learning;
+* Training of an XGBoost regression model;
+* Model evaluation;
+* Export of the trained model and preprocessing artefacts.
+
+The trained artefacts are later loaded by the Streamlit application for making predictions.
+
+## Main Model Artefacts
+
+The following files are used by the application:
+
+* `smart_energy_model.pkl` — trained XGBoost model;
+* `scaler.pkl` — scaler used during the model pipeline;
+* `df_gc_clean.pkl` — prepared dataset used by the application and analysis components.
+
+## Streamlit Application
+
+The trained model is integrated into a Streamlit application that provides an interactive energy-management interface.
+
+The application includes:
+
+* Energy-consumption forecasting;
+* A 24-hour forecast view;
+* Solar-production estimation;
+* Energy balance analysis;
+* Electricity-cost simulation;
+* Comparison of Portuguese electricity tariff cycles;
+* Recommendations based on energy and weather information;
+* User authentication;
+* Saving and viewing simulation history;
+* CSV export of saved simulation data;
+* Pages for dataset exploration and model analysis.
+
+## Technologies
+
+* **Python**
+* **Jupyter Notebook**
+* **Pandas**
+* **NumPy**
+* **Scikit-learn**
+* **XGBoost**
+* **Joblib**
+* **Streamlit**
+* **Plotly**
+* **Matplotlib**
+* **Seaborn**
+* **Requests**
+* **Supabase**
+* **OpenWeatherMap API**
+
+## Repository Structure
 
 ```text
 .
-├── streamlit_app.py         # App principal e fluxo da interface
-├── utils.py                 # Carregamento de modelos, previsão e recomendações
-├── tariffs.py               # Lógica tarifária simplificada
-├── weather.py               # Integração com OpenWeatherMap
-├── supabase_http.py         # Autenticação e persistência via HTTP/Supabase
-├── config.py                # Leitura centralizada de segredos e variáveis de ambiente
-├── auth.py                  # Utilitários auxiliares de autenticação
+├── notebooks/
+│   └── notebook.ipynb          # Data analysis, preprocessing and ML pipeline
+│
 ├── pages/
-│   ├── dashboard.py         # Exploração visual do dataset agregado
-│   ├── history.py           # Histórico de simulações guardadas
-│   └── AI_model.py          # Explicação e métricas do modelo
-├── notebook.ipynb           # Notebook de exploração, preparação e treino
-├── smart_energy_model.pkl   # Modelo XGBoost treinado
-├── scaler.pkl               # Scaler utilizado no pipeline de inferência
-├── df_gc_clean.pkl          # Dataset agregado e preparado para modelação
-├── pyproject.toml
-└── requirements.txt
+│   ├── dashboard.py            # Dataset exploration dashboard
+│   ├── history.py              # Saved simulation history
+│   └── AI_model.py             # Model analysis and visualisation
+│
+├── streamlit_app.py            # Main Streamlit application
+├── utils.py                    # Model loading, predictions and recommendations
+├── tariffs.py                  # Electricity tariff calculations
+├── weather.py                  # Weather API integration
+├── supabase_http.py            # Supabase authentication and data persistence
+├── config.py                   # Configuration and environment variables
+├── auth.py                     # Authentication utilities
+│
+├── smart_energy_model.pkl      # Trained machine-learning model
+├── scaler.pkl                  # Preprocessing scaler
+├── df_gc_clean.pkl             # Prepared dataset
+│
+├── requirements.txt            # Python dependencies
+├── pyproject.toml              # Project configuration
+├── uv.lock                     # Locked dependencies
+├── .gitignore
+├── LICENSE
+└── README.md
 ```
 
-## Requisitos
+## Dataset
 
-- Python 3.11 ou superior
-- Conta e chave da API OpenWeatherMap
-- Projeto Supabase, se quiseres ativar login, histórico e persistência
+The project uses household energy-consumption data based on the Ausgrid Solar Home Electricity Dataset.
 
-## Instalação
+The data is processed in the notebook before being used for exploratory analysis and model training.
 
-### Opção 1: com `uv`
+The notebook documents the main data-processing and preparation steps used throughout the project.
 
-```sh
+## External Services
+
+The application can use the following external services:
+
+* **OpenWeatherMap API** for weather information;
+* **Supabase** for authentication and persistence of simulation history.
+
+Some application features require the corresponding API credentials to be configured.
+
+## Requirements
+
+* Python 3.11 or higher;
+* An OpenWeatherMap API key;
+* A Supabase project and credentials for authentication and persistent history features.
+
+The application can still run without Supabase configuration, but authentication, history, and saved scenarios may not be available.
+
+## Installation
+
+### Using `pip`
+
+Create and activate a virtual environment:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Install the project dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+### Using `uv`
+
+```bash
 uv venv
 source .venv/bin/activate
 uv sync
 ```
 
-### Opção 2: com `pip`
+## Configuration
 
-```sh
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+API credentials should not be committed to the repository.
+
+They can be configured using environment variables or Streamlit secrets.
+
+### Environment Variables
+
+```bash
+export OPENWEATHER_API_KEY="your_openweather_api_key"
+export SUPABASE_URL="https://your-project.supabase.co"
+export SUPABASE_KEY="your_supabase_key"
 ```
 
-## Configuração
+### Streamlit Secrets
 
-Podes configurar as credenciais através de variáveis de ambiente ou de segredos do Streamlit.
-
-### Variáveis de ambiente
-
-```sh
-export OPENWEATHER_API_KEY="a_tua_chave"
-export SUPABASE_URL="https://teu-projeto.supabase.co"
-export SUPABASE_KEY="a_tua_supabase_key"
-```
-
-### `.streamlit/secrets.toml`
+Create a `.streamlit/secrets.toml` file:
 
 ```toml
-OPENWEATHER_API_KEY = "a_tua_chave"
-SUPABASE_URL = "https://teu-projeto.supabase.co"
-SUPABASE_KEY = "a_tua_supabase_key"
+OPENWEATHER_API_KEY = "your_openweather_api_key"
+SUPABASE_URL = "https://your-project.supabase.co"
+SUPABASE_KEY = "your_supabase_key"
 ```
 
-Também são aceites aliases de configuração definidos em [config.py](/workspaces/demo-seattle-weather/config.py).
+The `.streamlit/secrets.toml` file should not be uploaded to GitHub.
 
-## Executar a aplicação
+## Running the Notebook
 
-```sh
+To explore the data analysis and machine-learning pipeline, open the notebook:
+
+```bash
+jupyter notebook notebooks/notebook.ipynb
+```
+
+Alternatively, the notebook can be opened directly through GitHub.
+
+The notebook contains the main data-science workflow, including data preparation, exploratory analysis, model training, evaluation, and artefact generation.
+
+## Running the Streamlit Application
+
+Start the application from the root directory of the repository:
+
+```bash
 streamlit run streamlit_app.py
 ```
 
-Depois abre o endereço mostrado no terminal, normalmente `http://localhost:8501`.
+After starting the application, open the local address displayed in the terminal. The default address is usually:
 
-## Executar o notebook
-
-O notebook [notebook.ipynb](/workspaces/demo-seattle-weather/notebook.ipynb) reúne a preparação dos dados, análise exploratória, treino do modelo, avaliação e exportação dos artefactos `.pkl`.
-
-Se quiseres correr o notebook localmente, instala também as dependências de desenvolvimento:
-
-```sh
-pip install jupyter notebook ipykernel matplotlib seaborn
+```text
+http://localhost:8501
 ```
 
-## Artefactos do modelo
+## Model Integration
 
-- [smart_energy_model.pkl](/workspaces/demo-seattle-weather/smart_energy_model.pkl): modelo XGBoost treinado.
-- [scaler.pkl](/workspaces/demo-seattle-weather/scaler.pkl): `StandardScaler` guardado para consistência do pipeline.
-- [df_gc_clean.pkl](/workspaces/demo-seattle-weather/df_gc_clean.pkl): dataset agregado e preparado para inferência e análise.
+The Streamlit application loads the artefacts generated by the machine-learning pipeline:
 
-## Notas sobre a implementação
+```text
+smart_energy_model.pkl
+scaler.pkl
+df_gc_clean.pkl
+```
 
-- O modelo de consumo trabalha com features temporais e lags históricos.
-- A estimativa solar usa uma aproximação simplificada baseada em potência instalada, hora, mês, temperatura e nebulosidade.
-- A lógica tarifária atual é simplificada e serve como simulador operacional do protótipo.
-- Se o Supabase não estiver configurado, a app continua funcional, mas o login, o histórico e o guardar de cenários ficam desativados.
+These files must remain in the project root unless the paths in the Python code are updated accordingly.
 
-## Dependências principais
+The `pages/` directory must also remain next to `streamlit_app.py` so that Streamlit can automatically detect the application pages.
 
-- Streamlit
-- Pandas
-- NumPy
-- Plotly
-- Requests
-- XGBoost
-- scikit-learn
-- Supabase
-- Joblib
+## Project Highlights
 
-## Licença
+This project demonstrates experience with:
 
-Este projeto inclui a licença disponível em [LICENSE](/workspaces/demo-seattle-weather/LICENSE).
+* Data cleaning and preparation;
+* Exploratory data analysis;
+* Feature engineering;
+* Supervised machine learning;
+* Regression models;
+* Model evaluation;
+* Saving and loading trained models;
+* Interactive data applications;
+* API integration;
+* Authentication;
+* Data persistence;
+* Energy-consumption analysis;
+* Portuguese electricity tariff simulation.
 
-## Créditos e Referências
+## Academic Context
 
-- Dados de consumo e produção: [Ausgrid Solar Home Electricity Data](https://www.ausgrid.com.pt).
-- Scripts de referência para tratamento de dados: [Pierre Haessig](https://github.com/pierre-haessig/ausgrid-solar-data).
-- Inspiração para a interface Streamlit: [Streamlit Seattle Weather Demo](https://github.com/streamlit/demo-seattle-weather).
+* **Project:** Final Degree Project
+* **Degree:** Bachelor's Degree in Computer Science and Engineering
+* **Institution:** Instituto Superior Manuel Teixeira Gomes (ISMAT)
+* **Author:** Mariana Polícia
+
+## References
+
+* Ausgrid Solar Home Electricity Dataset (https://www.ausgrid.com.pt);
+* Reference sripts for data processing: [Pierre Haessig](https://github.com/pierre-haessig/ausgrid-solar-data).
+* Inspiration for the Streamlit Interface: [Streamlit Seattle Weather Demo](https://github.com/streamlit/demo-seattle-weather).
+* OpenWeatherMap API;
+* Streamlit;
+* XGBoost;
+* Scikit-learn;
+* Supabase.
+
+## License
+
+This project includes the license available in the [`LICENSE`](LICENSE) file.
